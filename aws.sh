@@ -13,7 +13,30 @@ function tagResource(){
 function descVPC(){
     vpcID=$1; shift
     [ -z $vpcID ] && return
-    aws ec2 describe-vpcs | jq ".Vpcs[] | select (.VpcId==\"$vpcID\")"
+
+    result=`aws ec2 describe-vpcs | jq ".Vpcs[] | select (.VpcId==\"$vpcID\")"`
+    vpcID=`echo $result | jq -r .VpcId`
+    #cidrBlockAssociationSet=`echo $result | jq -r .CidrBlockAssociationSet[]?.AssociationId`
+
+    igws=`aws ec2 describe-internet-gateways`
+    igwID=`echo $igws | jq -r ".InternetGateways[] | select(.Attachments[].VpcId == \"$vpcID\") | .InternetGatewayId "`
+
+    routeTables=`aws ec2 describe-route-tables`
+    rtbID=`echo $routeTables | jq -r ".RouteTables[] | select(.VpcId == \"$vpcID\" ) | .RouteTableId"`
+
+    subnets=`aws ec2 describe-subnets`
+    subnet=`echo $subnets | jq -r ".Subnets[] | select(.VpcId == \"$vpcID\")" `
+    subnetID=`echo $subnet | jq -r .SubnetId`
+    availabilityZone=`echo $subnet | jq -r .AvailabilityZone`
+
+    # TODO get ip address if possible
+
+    # aws ec2 describe-security-groups | jq -r ".SecurityGroups[] | select(.VpcId == \"vpc-0d61a27126306ae0e\") | .GroupId + \" \" + .GroupName"
+    echo $vpcID
+    echo $igwID
+    echo $rtbID
+    echo $subnetID
+    echo $availabilityZone
 }
 
 function createVPC(){
@@ -114,7 +137,7 @@ function deleteSubnet(){
 
 function spinUp(){
     doExport=0
-    [ -n $1 ] && doExport=$1 && shift
+    [ "$1" = '-e' ] && doExport=1 && shift
 
     vpcID=`createVPC`
     igwID=`createIGW`
@@ -123,7 +146,7 @@ function spinUp(){
     routeTableID=`echo $routeTable | jq -r .RouteTableId`
     aws ec2 create-route --route-table-id $routeTableID --destination-cidr-block '0.0.0.0/0' --gateway-id $igwID > /dev/null
     subnetID=`createSubnet $vpcID`
-    if [ $doExport = '-e' ]
+    if [ $doExport -eq 1 ]
     then
 	printf "export vpcID=$vpcID; export igwID=$igwID; export routeTableID=$routeTableID; export subnetID=$subnetID" | pbcopy
 	printf "exports of the following are in the system clipboard\n\n"
@@ -146,5 +169,19 @@ function tearDown(){
     # done
     deleteMyVPCs
 }
+
+
+# this is for docker-machine generated ec2 instance
+function exposePort(){
+    machineName=$1; shift
+    [ -z $machineName ] && echo please provide machine name && return
+    port=$1; shift
+    [ -z $port ] && echo please provide port && return
+
+    groupID=`docker-machine inspect $machineName | jq -r .Driver.SecurityGroupIds[]`
+    aws ec2 authorize-security-group-ingress --group-id $groupID --port $port --cidr "0.0.0.0/0" --protocol=tcp
+}
+
+
 
 $@
