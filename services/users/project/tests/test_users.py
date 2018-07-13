@@ -33,8 +33,8 @@ class TestUserService(BaseTestCase):
                     }),
                 content_type='application/json'
             )
-            print("response.data is \n\n", sys.stderr)
-            print(response.data, sys.stderr)
+            # print("response.data is \n\n", sys.stderr)
+            # print(response.data, sys.stderr)
 
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 201)

@@ -16,15 +16,18 @@ def ping_pong():
 @users_blueprint.route('/users', methods=['POST'])
 def add_user():
     post_data = request.get_json()
+
     response_object = {
         'status': 'fail',
-        'message': 'Invalid payload.'
+        'message': 'Invalid payload.',
         }
+
     if not post_data:
         return jsonify(response_object), 400
 
     username = post_data.get('username')
     email = post_data.get('email')
+
 
     try:
         user = User.query.filter_by(email=email).first()
