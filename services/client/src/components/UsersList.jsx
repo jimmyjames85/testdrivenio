@@ -8,9 +8,9 @@ const UsersList = (props) => {
 		 return (
 		   <h4
 		     key={user.id}
-		     className="card card-body bg-light"
+		     className="well" // card card-body bg-light"
 		    >
-			 {user.username} {user.email}
+			 {user.username}
 		     </h4>
 		 )
 	     })
