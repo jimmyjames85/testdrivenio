@@ -148,8 +148,10 @@ function spinUp(){
     subnetID=`createSubnet $vpcID`
     if [ $doExport -eq 1 ]
     then
+	printf 'Use this to create a new VPC\ndocker-machine create \n\t--driver amazonec2 \n\t--amazonec2-region=us-west-1 \n\t--amazonec2-zone=b \n\t--amazonec2-vpc-id=$vpcID  \n\t--amazonec2-subnet-id=$subnetID  \n\ttest\n\n'
 	printf "export vpcID=$vpcID; export igwID=$igwID; export routeTableID=$routeTableID; export subnetID=$subnetID" | pbcopy
 	printf "exports of the following are in the system clipboard\n\n"
+
     fi
     echo "       vpcID: $vpcID"
     echo "       igwID: $igwID"

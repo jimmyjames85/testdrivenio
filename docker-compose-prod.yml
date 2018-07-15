@@ -18,6 +18,21 @@ services:
     links:
       - users-db
 
+  client:
+    container_name: client
+    build:
+      context: ./services/client
+      dockerfile: Dockerfile-prod
+      args:
+        - NODE_ENV=production
+        - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
+    ports:
+      - 3000:80
+    depends_on:
+      - users
+    links:
+      - users
+
   users-db:
     container_name: users-db
     build:
@@ -33,9 +48,12 @@ services:
 
   nginx:
     container_name: nginx
-    build: ./services/nginx
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile-prod
     restart: always
     ports:
       - 80:80
     depends_on:
       - users
+      - client

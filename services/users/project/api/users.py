@@ -1,4 +1,3 @@
-import sys
 from flask import Blueprint, jsonify, request, render_template
 from sqlalchemy import exc
 from project.api.models import User
@@ -6,12 +5,14 @@ from project import db
 
 users_blueprint = Blueprint('users', __name__, template_folder='./templates')
 
+
 @users_blueprint.route('/users/ping', methods=['GET'])
 def ping_pong():
     return jsonify({
         'status': 'success',
         'message': 'pong!'
-        })
+    })
+
 
 @users_blueprint.route('/users', methods=['POST'])
 def add_user():
@@ -20,14 +21,13 @@ def add_user():
     response_object = {
         'status': 'fail',
         'message': 'Invalid payload.',
-        }
+    }
 
     if not post_data:
         return jsonify(response_object), 400
 
     username = post_data.get('username')
     email = post_data.get('email')
-
 
     try:
         user = User.query.filter_by(email=email).first()
@@ -38,7 +38,7 @@ def add_user():
             response_object = {
                 'status': 'success',
                 'message': f'{email} was added!'
-                }
+            }
             return jsonify(response_object), 201
         else:
             response_object['message'] = 'Sorry. That email already exists.'
@@ -49,12 +49,13 @@ def add_user():
     # print("post_data is: ", sys.stderr)
     # print(post_data, sys.stderr)
 
+
 @users_blueprint.route('/users/<user_id>', methods=['GET'])
 def get_user(user_id):
     """Get single user details"""
     response_object = {
-            'status': 'fail',
-            'message': 'User does not exist',
+        'status': 'fail',
+        'message': 'User does not exist',
     }
     try:
         user = User.query.filter_by(id=user_id).first()
@@ -71,11 +72,10 @@ def get_user(user_id):
                 }
             }
             return jsonify(response_object), 200
-    except ValueError:
-        # TODO this is what the tutorial said to use but it doesn't catch
+    except Exception:
+        # TODO the tutorial said to use ValueError instead of Exception but it doesn't catch
         return jsonify(response_object), 404
-    except:
-        return jsonify(response_object), 404
+
 
 @users_blueprint.route('/users', methods=['GET'])
 def get_all_users():
@@ -87,6 +87,7 @@ def get_all_users():
         },
     }
     return jsonify(response_object), 200
+
 
 @users_blueprint.route('/', methods=['GET', 'POST'])
 def index():
