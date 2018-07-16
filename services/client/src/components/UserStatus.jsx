@@ -9,7 +9,9 @@ class UserStatus extends Component {
 	this.state = {
 	    email: '',
 	    id: '',
-	    username: ''
+	    username: '',
+	    active: '',
+	    admin: ''
 	};
     };
 
@@ -34,6 +36,8 @@ class UserStatus extends Component {
 		email: res.data.data.email,
 		id: res.data.data.id,
 		username: res.data.data.username,
+		active: String(res.data.data.active),
+		admin: String(res.data.data.admin),
 	    })
 	})
 	.catch((error) => { console.log(error); });
@@ -47,13 +51,15 @@ class UserStatus extends Component {
 	    )
 	};
 	return (
-	    <div>
-	    <ul>
-	    <li><strong>User ID:</strong> {this.state.id}</li>
-	    <li><strong>Email:</strong> {this.state.email}</li>
-	    <li><strong>Username:</strong> {this.state.username}</li>
-	    </ul>
-	    </div>
+		<div>
+		  <ul>
+		    <li><strong>User ID:</strong> {this.state.id}</li>
+		    <li><strong>Email:</strong> {this.state.email}</li>
+		    <li><strong>Username:</strong> {this.state.username}</li>
+		    <li><strong>Active:</strong> {this.state.active}</li>
+		    <li><strong>Admin:</strong> {this.state.admin}</li>
+		  </ul>
+		</div>
 	)
     };
 
