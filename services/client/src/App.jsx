@@ -6,6 +6,8 @@ import About from './components/About';
 import NavBar from './components/NavBar';
 import Form from './components/Form';
 import Logout from './components/Logout';
+import UserStatus from './components/UserStatus';
+
 import { Route, Switch } from 'react-router-dom';
 
 class App extends Component {
@@ -37,7 +39,7 @@ class App extends Component {
     render(){
 	return (
 	<div>
-	  <NavBar title={this.state.title} />
+	  <NavBar title={this.state.title} isAuthenticated={this.state.isAuthenticated} />
 	  <div className="container">
 	    <div className="row">
 	      <div className="col-md-6">
@@ -81,6 +83,9 @@ class App extends Component {
 		        logoutUser={this.logoutUser}
 		        isAuthenticated={this.state.isAuthenticated}
 		      />
+		  )}/>
+		  <Route exact path='/status' render={ () => (
+		      <UserStatus isAuthenticated={this.state.isAuthenticated}/>
 		  )}/>
 		</Switch>
 	      </div>
