@@ -17,8 +17,7 @@ before_script:
   - docker-compose -f docker-compose.yml up --build -d
 
 script:
-  - docker-compose -f docker-compose.yml run users python manage.py test
-  - docker-compose -f docker-compose.yml run users flake8 --ignore=E501 project
+  - bash test.sh stage
 
 after_script:
   - docker-compose -f docker-compose.yml down
