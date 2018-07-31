@@ -2,6 +2,7 @@ import { Selector } from 'testcafe';
 
 const randomstring = require('randomstring');
 const username = randomstring.generate();
+const password = 'greaterthanten';
 const email = `${username}@test.com`;
 
 const TEST_URL = process.env.TEST_URL;
@@ -13,6 +14,10 @@ test(`should display the sign in form`, async (t) => {
 	.navigateTo(`${TEST_URL}/login`)
 	.expect(Selector('H1').withText('Login').exists).ok()
 	.expect(Selector('form').exists).ok()
+	.expect(Selector('input[disabled]').exists).ok()
+	.expect(Selector('.validation-list').exists).ok()
+	.expect(Selector('.validation-list > .error').nth(0).withText(
+	    'Email is required.').exists).ok()
 });
 
 test(`should allow a user to sign in`, async (t) => {
@@ -21,7 +26,7 @@ test(`should allow a user to sign in`, async (t) => {
 	.navigateTo(`${TEST_URL}/register`)
 	.typeText('input[name="username"]', username)
 	.typeText('input[name="email"]', email)
-	.typeText('input[name="password"]', 'test')
+	.typeText('input[name="password"]', password)
 	.click(Selector('input[type="submit"]'))
 
     // log a user out
@@ -33,7 +38,7 @@ test(`should allow a user to sign in`, async (t) => {
     await t
 	.navigateTo(`${TEST_URL}/login`)
 	.typeText('input[name="email"]', email)
-	.typeText('input[name="password"]', 'test')
+	.typeText('input[name="password"]', password)
 	.click(Selector('input[type="submit"]'))
 
     // assert user is redirected to '/'
